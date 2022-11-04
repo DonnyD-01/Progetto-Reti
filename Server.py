@@ -32,4 +32,3 @@ while True:
     connectionSocket.send(json.dumps(systemInfo, indent=4).encode())
     connectionSocket.send(json.dumps(netWorkInfo, indent=4).encode())
     connectionSocket.close()
-    
