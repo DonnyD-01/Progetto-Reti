@@ -3,8 +3,8 @@ import platform, re, uuid, socket, psutil, GPUtil, json, cpuinfo
 
 
 #Getting information about the system
+systemInfo = {}
 try:
-	systemInfo = {}
 	systemInfo['platform'] = platform.system()
 	systemInfo['platform-release'] = platform.release()
 	systemInfo['platform-version'] = platform.version()
@@ -13,8 +13,8 @@ except:
 	systemInfo['error'] = "Cannot Recover System Information"
 
 #Getting information about the hardware
+hardwareInfo = {}
 try:
-	hardwareInfo = {}
 	hardwareInfo['cpu'] = cpuinfo.get_cpu_info()['brand_raw']
 	hardwareInfo['cores'] = psutil.cpu_count(logical = False)
 	hardwareInfo['threads'] = psutil.cpu_count()
@@ -30,8 +30,8 @@ except:
 	hardwareInfo['error'] = "Cannot recover Hardware Information"
 
 #Getting information about the disks
+diskInfo = {}
 try:
-	diskInfo = {}
 	partitions = psutil.disk_partitions()
 	i = 1
 	for partition in partitions:
@@ -46,8 +46,8 @@ except:
 	diskInfo['error'] = "Cannot recover Disks Information"
 
 #Getting information about the network card
+networkInfo = {}
 try:
-	networkInfo = {}
 	networkInfo['hostname'] = socket.gethostname()
 	networkInfo['ip-address'] = socket.gethostbyname(socket.gethostname())
 	networkInfo['mac-address'] = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
