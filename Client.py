@@ -9,7 +9,7 @@ clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 
 #Reception and decoding of the messages sent by the server
-for x in range (4):
+for x in range (8):
 	modifiedSentence = clientSocket.recv(1024)
 	print(modifiedSentence.decode())
 clientSocket.close()
