@@ -2,7 +2,7 @@ import json,socket,os
 
 #Setting variables for connection
 serverName = 'localhost'
-serverPort = 12000
+serverPort = 17703
 
 #Connection to the server
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

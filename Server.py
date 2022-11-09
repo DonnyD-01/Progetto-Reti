@@ -1,5 +1,4 @@
-from os import get_terminal_size
-import platform, re, uuid, socket, psutil, GPUtil, json, cpuinfo, datetime
+import platform, re, uuid, socket, psutil, json, cpuinfo, datetime
 
 #Getting information about the system
 systemInfo = {}
@@ -86,7 +85,7 @@ except:
 
 
 #Network variables initialization for connection to the client 
-serverPort = 12000
+serverPort = 17703
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
