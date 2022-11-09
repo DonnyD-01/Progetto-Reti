@@ -44,19 +44,6 @@ try:
 except:
 	memoryInfo['error'] = "Cannot Recover additional Memory Information"
 
-#Getting information about the GPUs
-gpuInfo = {}
-try:	
-	gpus = GPUtil.getGPUs()
-	i = 1
-	for gpu in gpus:
-		gpuInfo['gpu' + str(i) + '-name'] = gpu.name
-		gpuInfo['gpu' + str(i) + '-uuid'] = gpu.uuid
-		gpuInfo['gpu' + str(i) + '-vram'] = str(int(gpu.memoryTotal) // 1024) + "GB"
-		i += 1
-except:
-	gpuInfo['error'] = "Cannot recover additional GPU Information"
-
 #Getting information about the disks
 diskInfo = {}
 try:
@@ -110,7 +97,6 @@ while True:
 	connectionSocket.send(json.dumps(systemInfo, indent=4).encode())
 	connectionSocket.send(json.dumps(cpuInfo, indent=4).encode())
 	connectionSocket.send(json.dumps(memoryInfo, indent=4).encode())
-	connectionSocket.send(json.dumps(gpuInfo, indent=4).encode())
 	connectionSocket.send(json.dumps(diskInfo, indent=4).encode())
 	connectionSocket.send(json.dumps(networkInfo, indent=4).encode())
 	connectionSocket.send(json.dumps(batteryInfo, indent=4).encode())
