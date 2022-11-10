@@ -15,9 +15,8 @@ if os.path.isfile(filepath):
 jsonfile = open(filepath, 'a')
 
 #Reception and decoding of the messages sent by the server
-for x in range (8):
-	modifiedSentence = clientSocket.recv(1024)
-	jsonfile.write(modifiedSentence.decode())
-	print(modifiedSentence.decode())
+modifiedSentence = clientSocket.recv(4096)
+jsonfile.write(modifiedSentence.decode())
+print(modifiedSentence.decode())
 jsonfile.close()
 clientSocket.close()
