@@ -8,15 +8,16 @@ serverPort = 17703
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 clientSocket.connect((serverName, serverPort))
 
-#If file exists, delete it
-filepath = "SystemInformation.JSON"
-if os.path.isfile(filepath):
-	os.remove(filepath)
-jsonfile = open(filepath, 'a')
+#Creating the file with the Information 
+jsonfile = open("SystemInformation.JSON", 'w')
 
 #Reception and decoding of the messages sent by the server
-modifiedSentence = clientSocket.recv(4096)
-jsonfile.write(modifiedSentence.decode())
-print(modifiedSentence.decode())
+info = clientSocket.recv(128)
+size = int(info.decode())
+info = clientSocket.recv(size)
+jsonfile.write(info.decode())
+print(info.decode())
+
+#Closing file and connection
 jsonfile.close()
 clientSocket.close()

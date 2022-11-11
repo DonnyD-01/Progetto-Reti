@@ -1,10 +1,10 @@
-import platform, re, uuid, socket, psutil, json, cpuinfo, datetime
+import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, sys
 
 #Getting information about the system
 systemInfo = {}
 systemInfo['platformInfo'] = {}
 try:	
-	systemInfo['platformInfo']['boot-time']=datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
+	systemInfo['platformInfo']['boot-time'] = datetime.datetime.fromtimestamp(psutil.boot_time()).strftime("%Y-%m-%d %H:%M:%S")
 	systemInfo['platformInfo']['platform'] = platform.system()
 	systemInfo['platformInfo']['platform-release'] = platform.release()
 	systemInfo['platformInfo']['platform-version'] = platform.version()
@@ -24,7 +24,7 @@ try:
 	systemInfo['cpuInfo']['cores'] = psutil.cpu_count(logical = False)
 	systemInfo['cpuInfo']['threads'] = psutil.cpu_count()
 	systemInfo['cpuInfo']['total-usage'] = str(psutil.cpu_percent()) + "%"
-	cpuFreq=psutil.cpu_freq()
+	cpuFreq = psutil.cpu_freq()
 	systemInfo['cpuInfo']['max-frequency'] = str(round(cpuFreq.max, 2)) + "MHz"
 	systemInfo['cpuInfo']['current-frequency'] = str(round(cpuFreq.current, 2)) + "MHz" 
 	systemInfo['cpuInfo']['min-frequency'] = str(round(cpuFreq.min, 2)) + "MHz"
@@ -82,15 +82,19 @@ try:
 		systemInfo['batteryInfo']['plugged'] = str(battery.power_plugged)
 except:
 	systemInfo['batteryInfo']['error'] = "Cannot recover additional Battery Infomation"
+	
 
 #Network variables initialization for connection to the client 
 serverPort = 17703
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
+jsonInfo = json.dumps(systemInfo,indent = 4)
+size = str(sys.getsizeof(jsonInfo))
 
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.send(json.dumps(systemInfo, indent=4).encode())
+	connectionSocket.send(size.encode())
+	connectionSocket.send(json.dumps(systemInfo, indent = 4).encode())
 	connectionSocket.close()
