@@ -46,16 +46,19 @@ except:
 #Getting information about the disks
 systemInfo['diskInfo'] = {}
 try:
-	partitions = psutil.disk_partitions()
+	partitions = psutil.disk_partitions(all = False)
 	i = 1
 	for partition in partitions:
-		systemInfo['diskInfo']['disk' + str(i) + '-name'] = partition.device
-		systemInfo['diskInfo']['disk' + str(i) + '-mountpoint'] = partition.mountpoint
-		systemInfo['diskInfo']['disk' + str(i) + '-filesystem'] = partition.fstype
-		partition_usage = psutil.disk_usage(partition.mountpoint)
-		systemInfo['diskInfo']['disk' + str(i) + '-totalsize'] = str(partition_usage.total // (1024 ** 3)) + "GB"
-		systemInfo['diskInfo']['disk' + str(i) + '-free'] = str(partition_usage.free // (1024 ** 3)) + "GB"
-		i += 1
+		partitionUsage = psutil.disk_usage(partition.mountpoint)
+		if partitionUsage.free != 0:
+			systemInfo['diskInfo']['disk' + str(i) + '-name'] =  partition.device
+			systemInfo['diskInfo']['disk' + str(i) + '-mountpoint'] = partition.mountpoint
+			systemInfo['diskInfo']['disk' + str(i) + '-filesystem'] = partition.fstype
+			systemInfo['diskInfo']['disk' + str(i) + '-totalsize'] = str(round(partitionUsage.total / (1024.0 ** 3), 2)) + "GB"
+			systemInfo['diskInfo']['disk' + str(i) + '-free'] = str(round(partitionUsage.free / (1024.0 ** 3), 2)) + "GB"
+			i += 1
+		else:
+			continue
 except:
 	systemInfo['diskInfo']['error'] = "Cannot recover additional Disks Information"
 
@@ -93,5 +96,5 @@ serverSocket.listen(1)
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.send(json.dumps(systemInfo,indent = 4).encode())
+	connectionSocket.sendall(json.dumps(systemInfo,indent = 4).encode())
 	connectionSocket.close()

@@ -3,6 +3,7 @@ import json,socket,os
 #Setting variables for connection
 serverName = 'localhost'
 serverPort = 17703
+bufferSize = 65536
 
 #Connection to the server
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -12,7 +13,7 @@ clientSocket.connect((serverName, serverPort))
 jsonfile = open("SystemInformation.JSON", 'w')
 
 #Reception and decoding of the messages sent by the server
-info = clientSocket.recv(4096)
+info = clientSocket.recv(bufferSize)
 jsonfile.write(info.decode())
 print(info.decode())
 
