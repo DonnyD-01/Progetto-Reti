@@ -89,12 +89,9 @@ serverPort = 17703
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
-jsonInfo = json.dumps(systemInfo,indent = 4)
-size = str(sys.getsizeof(jsonInfo))
 
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.send(size.encode())
-	connectionSocket.send(json.dumps(systemInfo, indent = 4).encode())
+	connectionSocket.send(json.dumps(systemInfo,indent = 4).encode())
 	connectionSocket.close()

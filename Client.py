@@ -12,9 +12,7 @@ clientSocket.connect((serverName, serverPort))
 jsonfile = open("SystemInformation.JSON", 'w')
 
 #Reception and decoding of the messages sent by the server
-info = clientSocket.recv(128)
-size = int(info.decode())
-info = clientSocket.recv(size)
+info = clientSocket.recv(4096)
 jsonfile.write(info.decode())
 print(info.decode())
 
