@@ -1,4 +1,4 @@
-import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, sys
+import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, sys, subprocess
 
 #Getting information about the system
 systemInfo = {}
@@ -86,6 +86,17 @@ try:
 except:
 	systemInfo['batteryInfo']['error'] = "Cannot recover additional Battery Infomation"
 	
+#Getting info about RoutingTable and DNS 
+if systemInfo['platformInfo']['platform'] == 'Windows':
+	rtCommand = subprocess.run(['route','print'], stdout = subprocess.PIPE)
+	dnsCommand = subprocess.run(['ipconfig', '/displaydns'], stdout = subprocess.PIPE) 
+else:
+	rtCommand = subprocess.run(['netstat', '-rn'], stdout = subprocess.PIPE)
+	dnsCommand = subprocess.run(['systemctl', 'is-active','system-resolved'], stdout = subprocess.PIPE)
+	
+#Saving the output into strings for the send 	
+routingTable = rtCommand.stdout
+dns = dnsCommand.stdout
 
 #Network variables initialization for connection to the client 
 serverPort = 17703
@@ -93,8 +104,13 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
 
+
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.sendall(json.dumps(systemInfo,indent = 4).encode())
+	connectionSocket.send(json.dumps(systemInfo,indent = 4).encode())
+	connectionSocket.recv(128)
+	connectionSocket.send(routingTable)
+	connectionSocket.recv(128)
+	connectionSocket.send(dns)
 	connectionSocket.close()

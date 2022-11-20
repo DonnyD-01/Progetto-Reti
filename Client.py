@@ -12,8 +12,14 @@ clientSocket.connect((serverName, serverPort))
 
 #Reception and decoding of the messages sent by the server
 info = clientSocket.recv(bufferSize).decode()
-clientSocket.close()
+clientSocket.send("TMB".encode())
 infoJson = json.loads(info)
+
+routingTable = clientSocket.recv(bufferSize).decode()
+clientSocket.send("TMB".encode())
+dns = clientSocket.recv(bufferSize).decode()
+
+clientSocket.close()
 
 #Building the path of the direcotry to create based on OS and timestamp
 if(infoJson['platformInfo']['platform'] == "Windows"):
@@ -25,11 +31,19 @@ else:
 if not os.path.isdir(path):
     try:
         os.makedirs(path)
-        jsonFile = open(path + "/SystemInformation.JSON", 'w')
-        jsonFile.write(info)
-        jsonFile.close()
+        with open(path + "/SystemInformation.JSON", 'w') as file:
+        	file.write(info)
+        
+       	with open(path + "/RoutingTable.txt", 'w') as file:
+        	file.write(routingTable)
+        
+        with open(path + "/DNS.txt", 'w') as file:
+        	file.write(dns)
+ 
     except OSError:
-        print (f"Creation of the subdirectory \"{path}\" failed")
+        print ("Creation of the subdirectory \"{path}\" failed")
 
 #Print of all the system information of the server
 print(info)
+print(routingTable)
+print(dns)
