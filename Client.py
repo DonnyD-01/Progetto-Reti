@@ -31,14 +31,14 @@ else:
 if not os.path.isdir(path):
     try:
         os.makedirs(path)
-        with open(path + "/SystemInformation.JSON", 'w') as file:
-        	file.write(info)
-        
-       	with open(path + "/RoutingTable.txt", 'w') as file:
-        	file.write(routingTable)
-        
-        with open(path + "/DNS.txt", 'w') as file:
-        	file.write(dns)
+        with open(path + "/SystemInformation.JSON", "w") as file:
+            file.write(info)
+            
+        with open(path + "/RoutingTable.txt", "w") as file:
+            file.write(routingTable)
+            
+        with open(path + "/DNS.txt", "w") as file:
+            file.write(dns)
  
     except OSError:
         print ("Creation of the subdirectory \"{path}\" failed")

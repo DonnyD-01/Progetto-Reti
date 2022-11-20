@@ -1,4 +1,4 @@
-import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, sys, subprocess
+import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess
 
 #Getting information about the system
 systemInfo = {}
@@ -38,7 +38,7 @@ try:
 	systemInfo['memoryInfo']['ram-size'] = str(round(ram.total / (1024.0 ** 3), 2)) + "GB"
 	systemInfo['memoryInfo']['available'] = str(round(ram.available / (1024.0 ** 3), 2)) + "GB"
 	systemInfo['memoryInfo']['used'] = str(round(ram.used / (1024.0 ** 3), 2)) + "GB"
-	systemInfo['memoryInfo']['percentage-used'] = str(ram.percent) +"%"
+	systemInfo['memoryInfo']['percentage-used'] = str(ram.percent) + "%"
 	systemInfo['memoryInfo']['swap-memory'] = str(round(psutil.swap_memory().total / (1024.0 ** 3), 2)) + "GB"
 except:
 	systemInfo['memoryInfo']['error'] = "Cannot Recover additional Memory Information"
@@ -79,7 +79,7 @@ systemInfo['batteryInfo'] = {}
 try:
 	battery = psutil.sensors_battery()
 	systemInfo['batteryInfo']['battery'] = "false"
-	if battery != None :
+	if battery != None:
 		systemInfo['batteryInfo']['battery'] = "true"
 		systemInfo['batteryInfo']['charge'] = str(battery.percent) + "%"
 		systemInfo['batteryInfo']['plugged'] = str(battery.power_plugged)
@@ -88,11 +88,11 @@ except:
 	
 #Getting info about RoutingTable and DNS 
 if systemInfo['platformInfo']['platform'] == 'Windows':
-	rtCommand = subprocess.run(['route','print'], stdout = subprocess.PIPE)
+	rtCommand = subprocess.run(['route', 'print'], stdout = subprocess.PIPE)
 	dnsCommand = subprocess.run(['ipconfig', '/displaydns'], stdout = subprocess.PIPE) 
 else:
 	rtCommand = subprocess.run(['netstat', '-rn'], stdout = subprocess.PIPE)
-	dnsCommand = subprocess.run(['systemctl', 'is-active','system-resolved'], stdout = subprocess.PIPE)
+	dnsCommand = subprocess.run(['systemctl', 'is-active', 'system-resolved'], stdout = subprocess.PIPE)
 	
 #Saving the output into strings for the send 	
 routingTable = rtCommand.stdout
@@ -108,7 +108,7 @@ serverSocket.listen(1)
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.send(json.dumps(systemInfo,indent = 4).encode())
+	connectionSocket.send(json.dumps(systemInfo, indent = 4).encode())
 	connectionSocket.recv(128)
 	connectionSocket.send(routingTable)
 	connectionSocket.recv(128)
