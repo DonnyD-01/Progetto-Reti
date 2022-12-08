@@ -48,23 +48,29 @@ print(info)
 print(routingTable)
 print(dns)
 
+#Obtaining number of files to receive 
+numFiles = int(clientSocket.recv(bufferSize).decode())
+clientSocket.send("TMB".encode())
+
 #Obtaining files from the Server
-fileName = clientSocket.recv(bufferSize).decode()
-clientSocket.send("TMB".encode())
-fileSize = clientSocket.recv(bufferSize).decode()
-clientSocket.send("TMB".encode())
+for i in range(numFiles):
+	fileName = clientSocket.recv(bufferSize).decode()
+	clientSocket.send("TMB".encode())
+	fileSize = clientSocket.recv(bufferSize).decode()
+	clientSocket.send("TMB".encode())
 
-print("Received new File: " + fileName + "\t" + fileSize + "B")  
+	print("Received new File: " + fileName + "\t" + fileSize + "B")  
 
-done = False
+	done = False
 
-with open (path + "/" + fileName, "wb") as f:
-	fileBytes = b""
-	while not done:
-		if fileBytes[-5:] == b"<TMB>":
-			done = True
-		else:
-			data = clientSocket.recv(bufferSize)
-			fileBytes += data
-	f.write(fileBytes[:-5])
+	with open (path + "/" + fileName, "wb") as f:
+		fileBytes = b""
+		while not done:
+			if fileBytes[-5:] == b"<TMB>":
+				done = True
+			else:
+				data = clientSocket.recv(bufferSize)
+				fileBytes += data
+		f.write(fileBytes[:-5])
+		clientSocket.send("TMB".encode())
 clientSocket.close()
