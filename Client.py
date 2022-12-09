@@ -1,15 +1,33 @@
-import json,socket,os
+import json,socket,os,nmap
 from datetime import datetime
 
 #Setting variables for connection
-serverName = 'localhost'
+#serverName = 'localhost'
 serverPort = 17703
 bufferSize = 65536
 
+#Finds devices connected to the Network
+target = '127.0.0.0/24'
+
+scanner = nmap.PortScanner()
+scanner.scan(target, arguments = '-sn' , sudo = False)
+
+hosts = []
+for host in scanner.all_hosts():
+	addresses = scanner[host]['addresses']
+	hosts.append(addresses)
+
 #Connection to the server
 clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-clientSocket.connect((serverName, serverPort))
 
+for host in hosts:
+	print("Trying to connect at : " + host['ipv4'])
+	try:
+		clientSocket.connect((host['ipv4'], serverPort))
+		break	
+	except socket.error as e:
+		print("Failed")
+	
 #Reception and decoding of the messages sent by the server
 info = clientSocket.recv(bufferSize).decode()
 clientSocket.send("TMB".encode())

