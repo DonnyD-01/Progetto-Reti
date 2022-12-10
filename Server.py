@@ -8,11 +8,9 @@ serverSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 serverSocket.bind(('', serverPort))
 serverSocket.listen(1)
 
-print ("Ready to Connect")
-
+print("Waiting for connection")
 connectionSocket,addr = serverSocket.accept()
-
-print ("Connection established")
+print("Connection established")
 
 #Reception and decoding of the messages sent by client
 info = connectionSocket.recv(bufferSize).decode()
@@ -27,21 +25,23 @@ connectionSocket.send("TMB".encode())
 
 #Building the path of the direcotry to create based on OS and timestamp
 if(infoJson['platformInfo']['platform'] == "Windows"):
-    path = "Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-version'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+    path = "Retrieved\\" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-version'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+    separator = "\\"
 else:
-    path = "Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-release'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+    path = r"Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-release'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+    separator = r"/"
 
 #Creation of server's subdirectory if doesn't exist
 if not os.path.isdir(path):
 	try:
 		os.makedirs(path)
-		with open(path + "/SystemInformation.JSON", "w") as file:
+		with open(path + separator + "SystemInformation.JSON", "w") as file:
 			file.write(info)
 	    
-		with open(path + "/RoutingTable.txt", "w") as file:
+		with open(path + separator + "RoutingTable.txt", "w") as file:
 			file.write(routingTable)
 	    
-		with open(path + "/DNS.txt", "w") as file:
+		with open(path + separator + "DNS.txt", "w") as file:
 			file.write(dns)
  
 	except OSError:
@@ -67,7 +67,7 @@ for i in range(numFiles):
 
 	done = False
 
-	with open (path + "/" + fileName, "wb") as f:
+	with open (path + separator + fileName, "wb") as f:
 		fileBytes = b""
 		while not done:
 			if fileBytes[-5:] == b"<TMB>":

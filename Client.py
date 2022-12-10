@@ -1,14 +1,13 @@
 import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os, time
 
 #Setting variables for connection
-serverName = 'localhost'
+serverName = '127.0.0.0'
 serverPort = 17703
 
 while True:
-	time.sleep(1)
+	time.sleep(5)
 	#Connection to the server
 	clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-	print ("Waiting for Server to be online")
 	
 	#Waiting for the Server to be online
 	while True:
@@ -17,7 +16,7 @@ while True:
 			break
 		except socket.error as e:
 			continue
-	print ("Connection established")
+	
 	#Getting information about the system
 	systemInfo = {}
 	systemInfo['platformInfo'] = {}
@@ -163,3 +162,4 @@ while True:
 		clientSocket.close()
 	except: 
 		print("Error when sending files") 
+	time.sleep(5)
