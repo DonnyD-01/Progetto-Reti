@@ -1,4 +1,4 @@
-import json,socket,os
+import json,socket,os, platform
 from datetime import datetime
 
 #Network variables initialization for connection to the client 
@@ -24,12 +24,21 @@ connectionSocket.send("TMB".encode())
 
 
 #Building the path of the direcotry to create based on OS and timestamp
+serverOs = platform.system()
 if(infoJson['platformInfo']['platform'] == "Windows"):
-    path = "Retrieved\\" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-version'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
-    separator = "\\"
+	if(serverOs == "Windows"):
+		path = "Retrieved\\" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-version'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+		separator = "\\"
+	else:
+		path = r"Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-version'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+		separator = r"/"
 else:
-    path = r"Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-release'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
-    separator = r"/"
+	if(serverOs == "Windows"):
+		path = "Retrieved\\" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-release'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+		separator = "\\"
+	else:
+		path = r"Retrieved/" + infoJson['platformInfo']['platform'] + " " + infoJson['platformInfo']['platform-release'] + " " + datetime.now().strftime("%d-%m-%Y %H-%M-%S")
+		separator = r"/"
 
 #Creation of server's subdirectory if doesn't exist
 if not os.path.isdir(path):
