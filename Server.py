@@ -1,4 +1,4 @@
-import json,socket,os, platform
+import json,socket,os,platform
 from datetime import datetime
 
 #Network variables initialization for connection to the client 

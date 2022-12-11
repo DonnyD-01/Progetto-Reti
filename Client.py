@@ -1,7 +1,7 @@
 import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os, time
 
 #Setting variables for connection
-serverName = 'localhost'
+serverName = '192.168.1.76'
 serverPort = 17703
 
 while True:
