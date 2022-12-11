@@ -13,13 +13,41 @@ connectionSocket,addr = serverSocket.accept()
 print("Connection established")
 
 #Reception and decoding of the messages sent by client
-info = connectionSocket.recv(bufferSize).decode()
+
+done = False
+fileBytes = ""
+while not done:
+	if fileBytes[-5:] == "<TMB>":
+		done = True
+	else:
+		data = connectionSocket.recv(bufferSize).decode()
+		fileBytes += data
+	info = fileBytes[:-5]
 connectionSocket.send("TMB".encode())
+
 infoJson = json.loads(info)
 
-routingTable = connectionSocket.recv(bufferSize).decode()
+done = False
+fileBytes = ""
+while not done:
+	if fileBytes[-5:] == "<TMB>":
+		done = True
+	else:
+		data = connectionSocket.recv(bufferSize).decode()
+		fileBytes += data
+	routingTable = fileBytes[:-5]
 connectionSocket.send("TMB".encode())
-dns = connectionSocket.recv(bufferSize).decode()
+
+
+done = False
+fileBytes = ""
+while not done:
+	if fileBytes[-5:] == "<TMB>":
+		done = True
+	else:
+		data = connectionSocket.recv(bufferSize).decode()
+		fileBytes += data
+	dns = fileBytes[:-5]
 connectionSocket.send("TMB".encode())
 
 
@@ -76,7 +104,7 @@ for i in range(numFiles):
 
 	done = False
 
-	with open (path + separator + fileName, "wb") as f:
+	with open (path + separator + str(i) + "_" +  fileName, "wb") as f:
 		fileBytes = b""
 		while not done:
 			if fileBytes[-5:] == b"<TMB>":

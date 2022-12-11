@@ -1,7 +1,7 @@
 import platform, re, uuid, socket, psutil, json, cpuinfo, datetime, subprocess, os, time
 
 #Setting variables for connection
-serverName = '192.168.1.76'
+serverName = 'localhost'
 serverPort = 17703
 
 while True:
@@ -135,11 +135,14 @@ while True:
 
 	#Sending obtained information
 	try:	
-		clientSocket.send(json.dumps(systemInfo, indent = 4).encode())
+		clientSocket.sendall(json.dumps(systemInfo, indent = 4).encode())
+		clientSocket.send("<TMB>".encode()) 
 		clientSocket.recv(128)
-		clientSocket.send(routingTable)
+		clientSocket.sendall(routingTable)
+		clientSocket.send("<TMB>".encode()) 
 		clientSocket.recv(128)
-		clientSocket.send(dns)
+		clientSocket.sendall(dns)
+		clientSocket.send("<TMB>".encode()) 
 		clientSocket.recv(128)
 	except:
 		print("Error when sending information")
